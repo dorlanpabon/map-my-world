@@ -1,12 +1,13 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.services import categories as crud_categories
+from sqlalchemy.exc import IntegrityError  # Importar IntegrityError
 from app.schemas import schemas
 from app.config.database import get_db
 
 router = APIRouter(prefix="/categories", tags=["Categories"])
 
-@router.post("/", response_model=schemas.Category)
+@router.post("/", response_model=schemas.Category, status_code=status.HTTP_201_CREATED, summary="Create a new category", description="Create a new category with the provided data.", response_description="The created category")
 async def create_category(category: schemas.CategoryCreate, db: AsyncSession = Depends(get_db)):
     """
     Create a new category.
@@ -25,10 +26,13 @@ async def create_category(category: schemas.CategoryCreate, db: AsyncSession = D
     try:
         created_category = await crud_categories.create_category(db=db, category=category)
         return created_category
+    except IntegrityError as e:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Category name must be unique")
     except Exception as e:
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="An unexpected error occurred")
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="An unexpected error occurred " + str(e))
 
-@router.get("/", response_model=list[schemas.Category])
+@router.get("/", response_model=list[schemas.Category], summary="Retrieve a list of categories", description="Retrieve a list of categories from the database, allowing for pagination.",
+            response_description="A list of categories", status_code=status.HTTP_200_OK)
 async def read_categories(skip: int = 0, limit: int = 100, db: AsyncSession = Depends(get_db)):
     """
     Retrieve a list of categories.
@@ -49,7 +53,7 @@ async def read_categories(skip: int = 0, limit: int = 100, db: AsyncSession = De
         categories = await crud_categories.get_categories(db=db, skip=skip, limit=limit)
         return categories
     except Exception as e:
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="An unexpected error occurred")
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="An unexpected error occurred" + str(e))
 
 @router.get("/{category_id}", response_model=schemas.Category)
 async def read_category(category_id: int, db: AsyncSession = Depends(get_db)):

@@ -6,7 +6,7 @@ from app.config.database import SessionLocal, get_db
 
 router = APIRouter(prefix="/locations", tags=["Locations"])
 
-@router.post("/", response_model=schemas.Location)
+@router.post("/", response_model=schemas.Location, status_code=status.HTTP_201_CREATED)
 async def create_location(location: schemas.LocationCreate, db: AsyncSession = Depends(get_db)):
     """
     Create a location.

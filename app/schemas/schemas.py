@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 from datetime import datetime
 from typing import List, Optional
 
@@ -31,8 +31,7 @@ class Location(LocationBase):
     id: int
     created_at: datetime
 
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)  # Updated to use ConfigDict
 
 class CategoryBase(BaseModel):
     """
@@ -61,8 +60,7 @@ class Category(CategoryBase):
     id: int
     created_at: datetime
 
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)  # Updated to use ConfigDict
 
 class LocationCategoryReviewedBase(BaseModel):
     """
@@ -93,5 +91,4 @@ class LocationCategoryReviewed(LocationCategoryReviewedBase):
     id: int
     last_reviewed: Optional[datetime] = None
 
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)  # Updated to use ConfigDict

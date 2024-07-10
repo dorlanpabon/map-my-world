@@ -7,7 +7,7 @@ from typing import List
 
 router = APIRouter(prefix="/recommendations", tags=["Recommendations"])
 
-@router.get("/fresh/", response_model=List[schemas.LocationCategoryReviewed])
+@router.get("/fresh/", response_model=List[schemas.LocationCategoryReviewed], summary="Get fresh recommendations", description="Get fresh recommendations.", response_description="A list of recommended location-category relationships.")
 async def get_fresh_recommendations(db: AsyncSession = Depends(get_db)):
     """
     Get fresh recommendations.
@@ -41,7 +41,7 @@ async def get_never_reviewed_recommendations(db: AsyncSession = Depends(get_db))
     except Exception as e:
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="An unexpected error occurred")
 
-@router.post("/", response_model=schemas.LocationCategoryReviewed)
+@router.post("/", response_model=schemas.LocationCategoryReviewed, status_code=status.HTTP_201_CREATED, summary="Create a new relation", description="Create a new relation with the provided data.", response_description="The created relation")
 async def create_relation(review: schemas.LocationCategoryReviewedCreate, db: AsyncSession = Depends(get_db)):
     """
     Create a new relation.
@@ -59,7 +59,7 @@ async def create_relation(review: schemas.LocationCategoryReviewedCreate, db: As
     except Exception as e:
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="An unexpected error occurred")
     
-@router.post("/{review_id}/review", response_model=schemas.LocationCategoryReviewed)
+@router.post("/{review_id}/review", response_model=schemas.LocationCategoryReviewed, status_code=status.HTTP_201_CREATED)
 async def create_review(review_id: int, db: AsyncSession = Depends(get_db)):
     """
     Create a new review.
@@ -82,7 +82,7 @@ async def create_review(review_id: int, db: AsyncSession = Depends(get_db)):
     except Exception as e:
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="An unexpected error occurred")
     
-@router.post("/with-review/", response_model=schemas.LocationCategoryReviewed)
+@router.post("/with-review/", response_model=schemas.LocationCategoryReviewed, status_code=status.HTTP_201_CREATED)
 async def create_relation_with_review(review: schemas.LocationCategoryReviewedCreate, db: AsyncSession = Depends(get_db)):
     """
     Create a new relation with a review.
