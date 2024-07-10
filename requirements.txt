@@ -1,7 +1,0 @@
-app==0.0.1
-fastapi==0.111.0
-pydantic==2.8.2
-python-dotenv==1.0.1
-SQLAlchemy==2.0.31
-psycopg2
-psycopg2-binary
